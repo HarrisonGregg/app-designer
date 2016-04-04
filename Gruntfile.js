@@ -213,21 +213,29 @@ module.exports = function (grunt) {
                 path: 'http://localhost:<%= connect.options.port %>/index.html',
                 app: (function() {
                     var platform = require('os').platform();
-                    // windows: *win*
                     // mac: darwin
-                    if (platform.search('win') >= 0 &&
-                        platform.search('darwin') < 0) {
+                    // windows: *win*
+                    // linux: linux
+                    if (platform.search('darwin') >= 0) {
+                        // Mac expects Google Chrome.
+                        grunt.log.writeln('detected Mac environment');
+                        return 'Google Chrome';
+                    } else if (platform.search('win') >= 0) {
                         // Windows expects chrome.
                         grunt.log.writeln('detected Windows environment');
                         return 'chrome';
+                    } else if (platform.search('linux') >= 0) {
+                        // Linux expects google-chrome-stable.
+                        grunt.log.writeln('detected Linux environment');
+                        return 'google-chrome-stable';
                     } else {
-                        // Mac (and maybe others--add as discovered), expects
-                        // Google Chrome
-                        grunt.log.writeln('detected non-Windows environment');
-                        return 'Google Chrome';
+                        // Platform not recognized.
+                        // Let the user launch chrome.
+                        grunt.log.writeln('unrecognized environment');
+                        grunt.log.writeln('Please navigate chrome to the server url');
+                        return 'echo' // Something that won't cause an error
                     }
-                })()
-            }
+                })()            }
         },
     });
 
